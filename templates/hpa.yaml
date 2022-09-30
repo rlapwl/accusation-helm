@@ -1,0 +1,23 @@
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Values.fullnameOverride }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "accusation.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    kind: Rollout
+    name: {{ .Values.fullnameOverride }}
+    apiVersion: argoproj.io/v1alpha1
+  minReplicas: {{ .Values.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.autoscaling.maxReplicas }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.autoscaling.targetCPUUtilizationPercentage }}
+    # - type: Resource
+    #  resource:
+    #    name: memory
+    #    targetAverageUtilization: {{ .Values.autoscaling.targetMemoryUtilizationPercentage }}
